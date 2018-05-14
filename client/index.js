@@ -38,6 +38,9 @@ const handlers = {
   },
   position ({position}) {
     update(position)
+  },
+  noemi () {
+    toggleHomo('no homo')
   }
 }
 
@@ -51,7 +54,19 @@ function upload (positions) {
   ws.send(JSON.stringify(['position', ...positions]))
 }
 
-function getCoordsFromEvent ({clientX, clientY}) {
+function getCoordsFromEvent ({clientX, clientY, touches}) {
+  if (touches) {
+    const {
+      clientX,
+      clientY
+    } = touches[0]
+    console.log({clientX, clientY, radius})
+
+    return {
+      x: clientX - radius,
+      y: clientY
+    }
+  }
   return {
     x: clientX - radius,
     y: clientY - radius
@@ -84,8 +99,10 @@ function update ([id, x, y, z]) {
   })
 }
 
-document.body.addEventListener('pointerdown', event => {
+const handleDown = event => {
   if (!event.target.classList.contains(pieceClass)) return
+
+  document.body.style.overflow = 'hidden'
 
   element = event.target
   dragging = true
@@ -93,32 +110,44 @@ document.body.addEventListener('pointerdown', event => {
 
   moveAndSet(getCoordsFromEvent(event))
   element.style.zIndex = highestZ++
-})
+}
 
-document.body.addEventListener('pointermove', event => {
+const handleMove = event => {
   if (!dragging || !element) return
 
   moveAndSet(getCoordsFromEvent(event))
-})
+}
 
-document.body.addEventListener('pointerup', event => {
+const handleUp = event => {
   const {id} = element
   const {x, y, z} = positions[id]
+  document.body.style.overflow = 'initial'
   dragging = false
   element = null
   upload([id, x, y, z])
-})
+}
+
+document.body.addEventListener('mousedown', handleDown)
+document.body.addEventListener('mousemove', handleMove)
+document.body.addEventListener('mouseup', handleUp)
+
+document.body.addEventListener('touchstart', handleDown)
+document.body.addEventListener('touchmove', handleMove)
+document.body.addEventListener('touchend', handleUp)
 
 function createTyper (word, fn) {
   let typed = []
   window.addEventListener('keydown', event => {
     typed.push(event.key)
-    typed = typed.splice(-word.length)
+    typed = typed.slice(-word.length)
     if (typed.join('') === word) fn()
   })
 }
 
-const toggleHomo = () => document.body.classList.toggle('gay')
+function toggleHomo (nohomo) {
+  document.body.classList.toggle('gay')
+  nohomo || ws.send('["noemi"]')
+}
 
 createTyper('gay', toggleHomo)
 createTyper('noemi', toggleHomo)
