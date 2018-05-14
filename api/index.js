@@ -1,4 +1,4 @@
-const {Server} = require('ws')
+const {OPEN, Server} = require('ws')
 
 const wss = new Server({port: 3714})
 
@@ -22,6 +22,11 @@ wss.on('connection', (ws, request) => {
     position (id, x, y, z) {
       channels[channel][id] = {x, y, z}
       channelUsers[channel].forEach(user => {
+        if (user.readyState !== OPEN) {
+          channelUsers[channel] = channelUsers[channel].filter(user =>
+            user.readyState === OPEN
+          )
+        }
         user.send(JSON.stringify({
           type: 'position',
           position: [id, x, y, z]
@@ -35,3 +40,4 @@ wss.on('connection', (ws, request) => {
     handlers[type](...data)
   })
 })
+
