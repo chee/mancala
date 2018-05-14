@@ -60,11 +60,10 @@ function getCoordsFromEvent ({clientX, clientY, touches}) {
       clientX,
       clientY
     } = touches[0]
-    console.log({clientX, clientY, radius})
 
     return {
       x: clientX - radius,
-      y: clientY
+      y: clientY - radius
     }
   }
   return {
