@@ -1,0 +1,122 @@
+@mixin hexagon($size, $color, $border: 0)
+  position: relative
+  width: $size
+  height: ($size * 0.577)
+  background-color: $color
+  margin: ($size * 0.288) 0
+  border-left: $border
+  border-right: $border
+
+  &:before,
+  &:after
+    content: ""
+    position: absolute
+    @if $border == 0
+      width: 0
+      left: 0
+      border-left: ($size/2) solid transparent
+      border-right: ($size/2) solid transparent
+    @else
+      z-index: 1
+      width: ($size * 0.707)
+      height: ($size * 0.707)
+      transform: scaleY(0.5774) rotate(-45deg)
+      background-color: inherit
+      left: ($size * 0.129)
+
+  &:before
+    @if $border == 0
+      bottom: 100%
+      border-bottom: ($size * 0.288) solid $color
+    @else
+      top: -($size * 0.353)
+      border-top: $border
+      border-right: $border
+
+  &:after
+    @if $border == 0
+      top: 100%
+      width: 0
+      border-top: ($size * 0.288) solid $color
+    @else
+      bottom: -($size * 0.353)
+      border-bottom: $border
+      border-left: $border
+@mixin hexagon($size, $color, $border: 0)
+  position: relative
+  width: $size
+  height: ($size * 0.577)
+  background-color: $color
+  margin: ($size * 0.288) 0
+  border-left: $border
+  border-right: $border
+
+  &:before,
+  &:after
+    content: ""
+    position: absolute
+    @if $border == 0
+      width: 0
+      left: 0
+      border-left: ($size/2) solid transparent
+      border-right: ($size/2) solid transparent
+    @else
+      z-index: 1
+      width: ($size * 0.707)
+      height: ($size * 0.707)
+      transform: scaleY(0.5774) rotate(-45deg)
+      background-color: inherit
+      left: ($size * 0.129)
+
+  &:before
+    @if $border == 0
+      bottom: 100%
+      border-bottom: ($size * 0.288) solid $color
+    @else
+      top: -($size * 0.353)
+      border-top: $border
+      border-right: $border
+
+  &:after
+    @if $border == 0
+      top: 100%
+      width: 0
+      border-top: ($size * 0.288) solid $color
+    @else
+      bottom: -($size * 0.353)
+      border-bottom: $border
+      border-left: $border
+body
+  background-color: #226699
+  color: white
+  height: 100%
+  width: 100%
+
+.gay
+  background: repeating-linear-gradient(45deg, #ff2a50, #ffaa20 10px, #eeee33 10px, #33cc99 20px, #3399ff 20px, #cc55cc 30px)
+
+.piece
+  font-size: 30px
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  user-select: none
+  -moz-user-select: none
+
+.piece--white
+  @include hexagon(69px, #f7f7f7)
+
+.piece--black
+  @include hexagon(69px, #313131)
+
+.overlay
+  display: block
+  position: absolute
+  opacity: 0.7
+  top: 0
+  right: 0
+  left: 0
+  bottom: 0
+  background: grey
+  z-index: 10000000000000
+
