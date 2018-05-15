@@ -54,21 +54,21 @@ function upload (positions) {
   ws.send(JSON.stringify(['position', ...positions]))
 }
 
-function getCoordsFromEvent ({clientX, clientY, touches}) {
+function getCoordsFromEvent ({pageX, pageY, touches}) {
   if (touches) {
     const {
-      clientX,
-      clientY
+      pageX,
+      pageY
     } = touches[0]
 
     return {
-      x: clientX - radius,
-      y: clientY - radius
+      x: pageX - radius,
+      y: pageY - radius
     }
   }
   return {
-    x: clientX - radius,
-    y: clientY - radius
+    x: pageX - radius,
+    y: pageY - radius
   }
 }
 
@@ -101,8 +101,6 @@ function update ([id, x, y, z]) {
 const handleDown = event => {
   if (!event.target.classList.contains(pieceClass)) return
 
-  document.body.style.overflow = 'hidden'
-
   element = event.target
   dragging = true
   element.style.position = 'absolute'
@@ -120,7 +118,7 @@ const handleMove = event => {
 const handleUp = event => {
   const {id} = element
   const {x, y, z} = positions[id]
-  document.body.style.overflow = 'initial'
+
   dragging = false
   element = null
   upload([id, x, y, z])
