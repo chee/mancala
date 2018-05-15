@@ -6,7 +6,9 @@ const pieces = document.querySelectorAll(`.${pieceClass}`);
 const ws = new WebSocket(apiUrl)
 
 let highestZ = 0
+let dragged = false
 let dragging = false
+let held = false
 let element = null
 let wsConnected = false
 const radius = 40
@@ -98,6 +100,8 @@ function update ([id, x, y, z]) {
   })
 }
 
+const starting = {}
+
 const handleDown = event => {
   if (!event.target.classList.contains(pieceClass)) return
 
@@ -105,7 +109,16 @@ const handleDown = event => {
   dragging = true
   element.style.position = 'absolute'
 
-  moveAndSet(getCoordsFromEvent(event))
+
+  const {
+    x,
+    y
+  } = getCoordsFromEvent(event)
+
+  starting.x = x
+  starting.y = y
+
+  moveAndSet({x, y})
   element.style.zIndex = highestZ++
 }
 
@@ -115,13 +128,67 @@ const handleMove = event => {
   moveAndSet(getCoordsFromEvent(event))
 }
 
+function getDistance ({x: x1, y: y1}, {x: x2, y: y2}) {
+  if (x1 == null || x2 == null || y1 == null || y2 == null) return {}
+  const smallX = Math.min(x1, x2)
+  const largeX = Math.max(x1, x2)
+  const smallY = Math.min(y1, y2)
+  const largeY = Math.max(y1, y2)
+
+  return {
+    x: largeX - smallX,
+    y: largeY - smallY
+  }
+}
+
 const handleUp = event => {
+  if (held) return
   const {id} = element
   const {x, y, z} = positions[id]
+
+  const {x: distanceX, y: distanceY} = getDistance({x, y}, starting)
+
+  if (distanceX != null && distanceY != null) {
+    if (distanceX > radius / 2 || distanceY > radius / 2) {
+      dragged = true
+    }
+  }
 
   dragging = false
   element = null
   upload([id, x, y, z])
+  starting.x = null
+  starting.y = null
+  starting.z = null
+}
+
+const handleClick = event => {
+  if (dragged) {
+    dragged = false
+    return
+  }
+
+  if (element && held) {
+    element.style.position = 'absolute'
+
+    moveAndSet(getCoordsFromEvent(event))
+    element.style.zIndex = highestZ++
+    element.classList.remove('held')
+    element = null
+    held = false
+    return
+  }
+
+  if (held) return
+  if (!event.target) return
+  if (!event.target.classList.contains(pieceClass)) return
+
+  dragging = false
+  held = true
+
+  element = event.target
+
+  element.classList.add('held')
 }
 
 document.body.addEventListener('mousedown', handleDown)
@@ -131,6 +198,8 @@ document.body.addEventListener('mouseup', handleUp)
 document.body.addEventListener('touchstart', handleDown)
 document.body.addEventListener('touchmove', handleMove)
 document.body.addEventListener('touchend', handleUp)
+
+document.body.addEventListener('click', handleClick)
 
 function createTyper (word, fn) {
   let typed = []
