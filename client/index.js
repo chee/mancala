@@ -104,6 +104,7 @@ const starting = {}
 
 const handleDown = event => {
   if (!event.target.classList.contains(pieceClass)) return
+  document.body.classList.add('grabbing')
 
   element = event.target
   dragging = true
@@ -143,6 +144,8 @@ function getDistance ({x: x1, y: y1}, {x: x2, y: y2}) {
 
 const handleUp = event => {
   if (held) return
+  document.body.classList.remove('add')
+
   const {id} = element
   const {x, y, z} = positions[id]
 
@@ -176,6 +179,7 @@ const handleClick = event => {
     element.classList.remove('held')
     element = null
     held = false
+    document.body.classList.remove('grabbing')
     return
   }
 
@@ -185,6 +189,7 @@ const handleClick = event => {
 
   dragging = false
   held = true
+  document.body.classList.add('grabbing')
 
   element = event.target
 
