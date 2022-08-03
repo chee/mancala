@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "chee <chee@snake.dog>",
+  "author": "chee <yay@chee.party>",
   "license": "ISC",
   "dependencies": {
     "ws": "^5.1.1"
